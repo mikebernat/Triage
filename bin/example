@@ -1,0 +1,19 @@
+#!/usr/bin/php
+<?php
+
+require_once('../Triage/Suite.php');
+
+$suite = new Triage_Suite();
+
+$name = 'PHP Version';
+$callback = create_function('',
+	'
+	$required_version = "6.0.0";
+	if (version_compare(PHP_VERSION, $required_version) >= 0) {
+		return new Triage_Result("Pass", "PHP Version meets minimum requirements, current version: " . PHP_VERSION);
+	} else {
+		return new Triage_Result("Fail", "PHP Version does not meets minimum requirements ($required_version), current version: " . PHP_VERSION);
+	}
+	'
+);
+
