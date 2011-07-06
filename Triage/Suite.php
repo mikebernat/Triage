@@ -1,40 +1,82 @@
 <?php
+/**
+ * Suite.php
+ *
+ * PHP version 5.2.*
+ *
+ * @category Testing
+ * @package  Triage
+ * @author   Mike Bernat <mike@mikebernat.com>
+ * @name     class_name
+ * @license  MIT http://www.opensource.org/licenses/MIT
+ * @version  SVN: $Id$
+ * @link     https://github.com/mikebernat/Triage
+ * @since    .01
+ *
+ */
 
+
+/**
+ * Class representing a suite of test cases
+ *
+ * @category  Testing
+ * @package   Triage
+ * @author    Mike Bernat <mike@mikebernat.com>
+ * @copyright 2011 Mike Bernat <mike@mikebernat.com>
+ * @license   MIT http://www.opensource.org/licenses/MIT
+ * @version   Release: .01
+ * @link      https://github.com/mikebernat/Triage
+ * @since     .01
+ */
 class Triage_Suite
 {
 	
-	protected $_name;
-	protected $_cases = array();
+	protected $name;
+	protected $cases = array();
+	protected $hasrun = false;
 	
-	protected $_hasrun = false;
-	
-	
-	public function addCase(Triage_Case $case) {
-		$this->_cases[$case->getName()] = $case;
+	/**
+	 * Add a test case
+	 * 
+	 * @param Triage_Case $case The case
+	 * 
+	 * @return Triage_Suite
+	 */
+	public function addCase(Triage_Case $case) 
+	{
+		$this->cases[$case->getName()] = $case;
 		
 		return $this;
 	}
 	
 	/**
-	 * Sets name
-	 * @param string $name
+	 * Set the name
+	 * 
+	 * @param string $name name
 	 * 
 	 * @return Triage_Suite
 	 */
-	public function setName($name) {
+	public function setName($name) 
+	{
 		
 		if (!is_string($name)) {
-			require_once 'Triage/Exception.php';
+			include_once 'Triage/Exception.php';
 			throw new Triage_Exception('Name must be of type string');	
 		}
 		
-		$this->_name = $name;
+		$this->name = $name;
 		
 		return $this;
 	}
 	
-	public function getCases() {
-		return $this->_cases;
+	/**
+	 * Get cases
+	 * 
+	 * @return array
+	 */
+	public function getCases() 
+	{
+		return $this->cases;
 	}
 	
 	/**
@@ -42,46 +84,77 @@ class Triage_Suite
 	 * 
 	 * @return string
 	 */
-	public function getName() {
-		return $this->_name;
+	public function getName() 
+	{
+		return $this->name;
 	}
 	
-	public function run() {
-		
-		if ($this->_hasrun) {
-			throw new Triage_Exception('This test suite has already been run', $code);
+	/**
+	 * Execute the test cases
+	 * 
+	 * @throws Triage_Exception
+	 * 
+	 * @return array of cases and their results
+	 */
+	public function run() 
+	{
+		if ($this->hasrun) {
+			include_once 'Triage/Exception.php';
+			throw new Triage_Exception(
+				'This test suite has already been run'
+			);
 		}
 		
 		$cases = $this->getCases();
 		
 		if (empty($cases)) {
-			require_once 'Triage/Exception.php';
+			include_once 'Triage/Exception.php';
 			throw new Triage_Exception('No cases to run');
 		}
 		
-		foreach($cases as $case) {
+		foreach ($cases as $case) {
 			$result = $case->run();
 			
 			if (!($result instanceof Triage_Result)) {
-				require_once 'Triage/Exception.php';
-				throw new Triage_Exception('Result of test case not instace of Triage_Result');
+				include_once 'Triage/Exception.php';
+				throw new Triage_Exception(
+					'Result of test case not instace of Triage_Result'
+				);
 			}
 			
-			if (!$result->getResult() && $case->getFailMode() === Triage_Case::ERROR_FATAL) {
+			if (!$result->getResult() 
+				&& ($case->getFailMode() === Triage_Case::ERROR_FATAL)
+			) {
 				break;
 			}
 		}
 		
-		$this->_hasrun = true;
+		$this->hasrun = true;
 		
 		return $this->getCases();
 	}
 	
-	public function __toString() {
+	/**
+	 * Print the results in a readible manner
+	 * 
+	 * @return string
+	 */
+	public function __toString() 
+	{
 		return $this->display();
 	}
 	
-	public function display($print = true) {
+	/**
+	 * Print the results in a readible manner
+	 * 
+	 * @param bool $print print
+	 * 
+	 * @throws Triage_Exception
+	 * 
+	 * @return string
+	 */
+	public function display($print = true) 
+	{
 		if (!$this->_hasrun) {
 			$this->run();
 		}
@@ -93,13 +166,13 @@ class Triage_Suite
 		}
 		
 		$output = array();
-		foreach($cases as $case) {
+		foreach ($cases as $case) {
 			$result = $case->getResult()->getResult();
 			$output [] = sprintf(
 				'[%s] %s - %s',
-				 $case->getResult()->getResult(),
-				 $case->getName(),
-				 $case->getResult()->getMessage()
+				$case->getResult()->getResult(),
+				$case->getName(),
+				$case->getResult()->getMessage()
 			);
 		}
 		
