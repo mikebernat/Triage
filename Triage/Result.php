@@ -1,44 +1,106 @@
 <?php
+/**
+ * Result.php
+ *
+ * PHP version 5.2.*
+ *
+ * @category Testing
+ * @package  Triage
+ * @author   Mike Bernat <mike@mikebernat.com>
+ * @name     Triage_Result
+ * @license  MIT http://www.opensource.org/licenses/MIT
+ * @version  SVN: $Id$
+ * @link     https://github.com/mikebernat/Triage
+ * @since    .01
+ *
+ */
 
+/**
+ * Result of a Case
+ *
+ * @category  Testing
+ * @package   Triage
+ * @author    Mike Bernat <mike@mikebernat.com>
+ * @copyright 2011 Mike Bernat <mike@mikebernat.com>
+ * @license   MIT http://www.opensource.org/licenses/MIT
+ * @version   Release: .01
+ * @link      https://github.com/mikebernat/Triage
+ * @since     .01
+ */
 class Triage_Result
 {
-	protected $_result;
-	protected $_message;
+	protected $result;
+	protected $message;
 	
 	const RESULT_PASS = 'PASS';
 	const RESULT_FAIL = 'FAIL';
 	const RESULT_ERROR = 'ERROR';
 	const RESULT_WARNING = 'WARNING';
 	
-	public function __construct($result, $message = null) {
+	/**
+	 * Creates a case result object
+	 * 
+	 * @param string $result  Result of the test. See self::RESULT* constants
+	 * @param string $message Message to pass along with the result
+	 */
+	public function __construct($result, $message = null) 
+	{
 		$this->setResult($result);
 		$this->setMessage($message);
 	}
 	
-	public function setMessage($message) {
-		$this->_message = $message;
+	/**
+	 * Set the message
+	 * 
+	 * @param string $message message
+	 * 
+	 * @return Triage_Result
+	 */
+	public function setMessage($message) 
+	{
+		$this->message = $message;
 		
 		return $this;
 	}
 	
-	public function getMessage() {
-		return $this->_message;
+	/**
+	 * Get the message
+	 * 
+	 * @return string
+	 */
+	public function getMessage() 
+	{
+		return $this->message;
 	}
 	
-	public function setResult($result) {		
-		$this->_result = $result;
+	/**
+	 * Set the result
+	 * 
+	 * @param string $result result
+	 * 
+	 * @return Triage_Result
+	 */
+	public function setResult($result) 
+	{		
+		$this->result = $result;
 		
 		return $this;
 	}
 	
-	public function getResult() {
-		$result =  $this->_result;
+	/**
+	 * Get the result
+	 * 
+	 * @return string
+	 */
+	public function getResult() 
+	{
+		$result =  $this->result;
 		
 		if ($result === self::RESULT_PASS) {
 			return self::RESULT_PASS;
 		}
 		
-		if ($result === TRUE) {
+		if ($result === true) {
 			return self::RESULT_PASS;
 		}
 		
@@ -78,7 +140,7 @@ class Triage_Result
 			return self::RESULT_FAIL;
 		}
 		
-		if ($result === FALSE) {
+		if ($result === false) {
 			return self::RESULT_FAIL;
 		}
 		
@@ -93,7 +155,15 @@ class Triage_Result
 		return $result;
 	}
 	
-	protected function __toBool() { 
+	/**
+	 * Returns a boolean result
+	 * 
+	 * @throws Triage_Exception
+	 * 
+	 * @return bool
+	 */
+	protected function toBool() 
+	{ 
 		$result = $this->getResult();
 		
 		if ($result === self::RESULT_PASS) {
@@ -112,15 +182,29 @@ class Triage_Result
 			return false;
 		}
 		
-		require_once 'Triage/Exception.php';
-		throw new Triage_Exception('Result value not recognized: ' . var_export($result, true));
+		include_once 'Triage/Exception.php';
+		throw new Triage_Exception(
+			'Result value not recognized: ' . var_export($result, true)
+		);
 	}
 	
-	public function hasPassed() {
-		return $this->__toBool();
+	/**
+	 * Determine if the result was success
+	 * 
+	 * @return bool
+	 */
+	public function hasPassed() 
+	{
+		return $this->toBool();
 	}
 	
-	public function hasFailed() {
-		return !$this->__toBool();
+	/**
+	 * Determine is the result was a failure
+	 * 
+	 * @return bool
+	 */
+	public function hasFailed() 
+	{
+		return !$this->toBool();
 	}
 }
