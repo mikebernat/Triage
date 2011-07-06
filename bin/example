@@ -1,19 +1,90 @@
 #!/usr/bin/php
 <?php
-
-require_once('../Triage/Suite.php');
-
+/**
+ * example
+ * 
+ * PHP version 5.2.*
+ *
+ * @category Testing
+ * @package  Triage
+ * @author   Mike Bernat <mike@mikebernat.com>
+ * @name     class_name
+ * @license  MIT http://www.opensource.org/licenses/MIT
+ * @version  SVN: $Id$
+ * @link     https://github.com/mikebernat/Triage
+ * @since    .01
+ *
+ */
+ 
+// First, include the Suite class and instantiate it
+require_once '../Triage/Suite.php';
 $suite = new Triage_Suite();
 
+
+
+
+// Then, jump right into writing tests!
+// In this example, we're using create_function to create a callback
+// (aka lamda, aka closure) inline.
+// This method is quick and easy, but formatting can be a pain
 $name = 'PHP Version';
-$callback = create_function('',
+$callback = create_function(
+	'',
 	'
-	$required_version = "6.0.0";
+	$required_version = "5.0.0";
 	if (version_compare(PHP_VERSION, $required_version) >= 0) {
-		return new Triage_Result("Pass", "PHP Version meets minimum requirements, current version: " . PHP_VERSION);
+		return new Triage_Result(
+			"Pass", 
+			"PHP Version meets requirements, current version: " . PHP_VERSION
+		);
 	} else {
-		return new Triage_Result("Fail", "PHP Version does not meets minimum requirements ($required_version), current version: " . PHP_VERSION);
+		return new Triage_Result(
+			"Fail", 
+			"PHP Version does not meets requirements ($required_version), 
+			current version: " . PHP_VERSION
+			);
 	}
 	'
 );
+
+$case_version = new Triage_Case($name, $callback);
+$suite->addCase($case_version);
+
+
+
+
+
+// Another method, is to define your functions inline, and pass the name of
+// the function as the callback
+$name = 'Read access';
+
+/**
+ * Read Access example
+ *
+ * @return Triage_Result
+ */
+function Triage_Example_Read_access() 
+{
+	if (is_readable(dirname(__FILE__))) {
+		return new Triage_Result("Pass", "The current directory is readable");
+	} else {
+		return new Triage_Result(
+			"Fail", 
+			"The current directory ' . dirname(__FILE__) . ' is NOT readable"
+		);
+	}
+}
+
+$case_readaccess = new Triage_Case($name, 'Triage_Example_Read_access');
+$suite->addCase($case_readaccess);
+
+
+
+
+
+// Once all the cases are added, we can run the suite
+$suite->run();
+
+// And display the results
+echo $suite;
 

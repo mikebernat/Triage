@@ -124,13 +124,11 @@ class Triage_SuiteTest extends PHPUnit_Framework_TestCase
 		
 		$this->_suite->run();
 		
-		$expected = "[PASS] $test_name - PHP Version meets minimum requirements, current version: " . PHP_VERSION;
+		$expected = "[PASS] $test_name - PHP Version meets minimum requirements, current version: " . PHP_VERSION . PHP_EOL;
 
-		ob_start();
 		$result = $this->_suite->__toString();
-		ob_end_clean();
 		
-		$this->assertEquals($expected, $result[0]);
+		$this->assertEquals($expected, $result);
 	}
 	
 	/**

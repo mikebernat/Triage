@@ -15,6 +15,11 @@
  *
  */
 
+define('TRIAGE_RP', dirname(__FILE__));
+
+require_once TRIAGE_RP . DIRECTORY_SEPARATOR . 'Case.php';
+require_once TRIAGE_RP . DIRECTORY_SEPARATOR . 'Result.php';
+require_once TRIAGE_RP . DIRECTORY_SEPARATOR . 'Exception.php';
 
 /**
  * Class representing a suite of test cases
@@ -34,6 +39,24 @@ class Triage_Suite
 	protected $name;
 	protected $cases = array();
 	protected $hasrun = false;
+	
+	/**
+	 * Create a new test suite object
+	 */
+	public function __construct()
+	{
+		$this->init();
+	}
+	
+	/**
+	 * Placeholder method
+	 * 
+	 * @return void
+	 */
+	public function init()
+	{
+		
+	}
 	
 	/**
 	 * Add a test case
@@ -141,7 +164,7 @@ class Triage_Suite
 	 */
 	public function __toString() 
 	{
-		return $this->display();
+		return implode(PHP_EOL, $this->display(false));
 	}
 	
 	/**
@@ -155,7 +178,7 @@ class Triage_Suite
 	 */
 	public function display($print = true) 
 	{
-		if (!$this->_hasrun) {
+		if (!$this->hasrun) {
 			$this->run();
 		}
 		
@@ -167,14 +190,17 @@ class Triage_Suite
 		
 		$output = array();
 		foreach ($cases as $case) {
-			$result = $case->getResult()->getResult();
-			$output [] = sprintf(
+			$result   = $case->getResult()->getResult();
+			$output[] = sprintf(
 				'[%s] %s - %s',
 				$case->getResult()->getResult(),
 				$case->getName(),
 				$case->getResult()->getMessage()
 			);
 		}
+		
+		// Padding
+		$output[] = '';
 		
 		if ($print) {
 			print implode(PHP_EOL, $output);
