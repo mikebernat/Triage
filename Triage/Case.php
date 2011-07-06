@@ -7,7 +7,7 @@
  * @category Testing
  * @package  Triage
  * @author   Mike Bernat <mike@mikebernat.com>
- * @name     Acuity_Request
+ * @name     Triage_Case
  * @license  MIT http://www.opensource.org/licenses/MIT
  * @version  SVN: $Id$
  * @link     https://github.com/mikebernat/Triage
